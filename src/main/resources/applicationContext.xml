@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+    ">
+    <!--proxy代理对象工厂-->
+   <!-- <bean id="userService1" class="com.ai.aop.jdk.MyProxyBeanFactory" factory-method="createService"></bean>
+
+    <bean id="userService2" class="com.ai.aop.cglib.MyProxyBeanFactory" factory-method="createService"></bean>-->
+
+
+    <!--使用Spring提供的ProxyFactoryBean模拟代理过程, 实现Spring的AOP-->
+    <!-- 获得目标类对象 -->
+    <!--<bean id="userService" class="com.ai.aop.jdk.impl.UserServiceImpl"></bean>-->
+    <!-- 创建切面类 -->
+    <!--<bean id="myAspect" class="com.ai.aop.springProxyFactoryBean.MyAspect"></bean>-->
+    <!-- 创建代理类, 使用Spring配备的代理工厂 -->
+    <!--<bean id="proxyService" class="org.springframework.aop.framework.ProxyFactoryBean">-->
+        <!--&lt;!&ndash; 指定接口 &ndash;&gt;-->
+        <!--<property name="interfaces" value="com.ai.aop.jdk.UserService"></property>-->
+        <!--&lt;!&ndash; 确定目标类对象 &ndash;&gt;-->
+        <!--<property name="target" ref="userService"></property>-->
+        <!--&lt;!&ndash; 确定Aspect, 由于interceptorNames的形参值是String[], 所以使用value, 而非ref &ndash;&gt;-->
+        <!--<property name="interceptorNames" value="myAspect"></property>-->
+        <!--<property name="optimize" value="true"></property>-->
+    <!--</bean>-->
+
+
+    <!--利用AspectJ简化Spring中ProxyFactoryBean的配置-->
+    <!-- 配置特殊切面 -->
+    <!-- proxy-target-class配置是否使用cglib -->
+    <!--<aop:config proxy-target-class="true">-->
+        <!--<aop:pointcut id="myPointCut" expression="execution(* com.ai.aop.*.*.*(..))"/>-->
+        <!--<aop:advisor advice-ref="myAspect" pointcut-ref="myPointCut"/>-->
+    <!--</aop:config>-->
+        <!--
+            aop:config: 配置AOP
+                proxy-target-class: 配置是否强行使用cglib, 效果与前面的optimize一样
+                pointcut: 配置切入点.
+                    expression:  配置切入点表达式,用于获得目标类中需要增强的目标方法.
+                advisor: 配置切入点与切面类, 指明哪些方法需要增强.
+                    advice-ref: 切入类对象引用.
+                    pointcut-ref: 切入点引用.
+        -->
+
+
+
+    <!--使用AspectJ实现SpringAOP，基于xml配置通知类型-->
+    <!-- 创建目标类对象 -->
+    <!--<bean id="userService" class="com.ai.aop.aspectj.UserServiceImpl"></bean>-->
+    <!--&lt;!&ndash; 创建切面类 &ndash;&gt;-->
+    <!--<bean id="myAspect" class="com.ai.aop.aspectj.MyAspect"></bean>-->
+    <!--&lt;!&ndash; 使用 config 配置AspectJ的AOP &ndash;&gt;-->
+    <!--<aop:config>-->
+        <!--&lt;!&ndash; 声明切入面 &ndash;&gt;-->
+        <!--<aop:aspect ref="myAspect">-->
+            <!--&lt;!&ndash; 配置目标方法的切入点 &ndash;&gt;-->
+            <!--<aop:pointcut id="myPointCut" expression="execution(* com.ai.aop.aspectj.UserServiceImpl.*(..))"/>-->
+
+            <!--&lt;!&ndash;-->
+           <!--配置通知类型的时候, method代表切入类方法, pointcut-ref代表目标类切入点.-->
+           <!--二者结合的意思就是目标类中哪些切入点需要切入方法进行增强.-->
+            <!--&ndash;&gt;-->
+            <!--&lt;!&ndash; 前置通知-->
+            <!--<aop:before method="myBefore" pointcut-ref="myPointCut"/>-->
+             <!--后置通知, returning用于接收目标方法执行完后的返回值-->
+            <!--<aop:after-returning method="myAfterReturning" pointcut-ref="myPointCut" returning="ret"/>-->
+            <!--&ndash;&gt;-->
+
+            <!--&lt;!&ndash; 抛出异常通知要配合环绕通知使用, 环绕通知抛出的异常使用抛出异常通知接收 &ndash;&gt;-->
+            <!--<aop:around method="myAround" pointcut-ref="myPointCut"/>-->
+            <!--&lt;!&ndash; 抛出异常, throwing="e" 代表执行目标方法后,可能会抛出的异常通过 e 进行接收 &ndash;&gt;-->
+            <!--<aop:after-throwing method="myAfterThrowing" pointcut-ref="myPointCut" throwing="e"/>-->
+            <!--&lt;!&ndash; 最终通知 &ndash;&gt;-->
+            <!--<aop:after method="myAfter" pointcut-ref="myPointCut"/>-->
+        <!--</aop:aspect>-->
+    <!--</aop:config>-->
+
+
+    <!--使用AspectJ实现SpringAOP，基于注解的通知类型-->
+    <!--在 xml 配置文件中添加扫描, 扫描注解类-->
+    <context:component-scan base-package="com.ai.aop.aspectj.annotation"></context:component-scan>
+    <!--确定AOP注解生效-->
+    <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+</beans>
